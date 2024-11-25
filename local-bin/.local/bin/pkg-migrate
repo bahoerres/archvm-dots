@@ -1,0 +1,116 @@
+#!/bin/bash
+
+set -euo pipefail
+
+log() { echo ">>> $1"; }
+error() { echo "ERROR: $1" >&2; exit 1; }
+
+# Define package mappings (git -> stable)
+declare -A PACKAGE_MAPS=(
+    ["hyprland-protocols-git"]="hyprland-protocols"
+    ["hyprlang-git"]="hyprlang"
+    ["hyprpicker-git"]="hyprpicker"
+    ["hyprpicker-git-debug"]="hyprpicker"
+    ["hyprwayland-scanner-git"]="hyprland"  # Usually comes with hyprland
+    ["yay-git"]="yay"
+    ["pacman-contrib-git"]="pacman-contrib"
+    ["wlogout-git"]="wlogout"
+    ["bibata-cursor-git"]="bibata-cursor-theme"
+    ["gruvbox-material-gtk-theme-git"]="gruvbox-material-theme-git"  # Keep git for now, needs research
+    ["gruvbox-material-icon-theme-git"]="gruvbox-material-icon-theme"
+    ["gruvbox-plus-icon-theme-git"]="gruvbox-plus-icon-theme"
+)
+
+# Fun scripts that could be removed if not actively used
+OPTIONAL_PACKAGES=(
+    "pokemon-colorscripts-git"
+    "shell-color-scripts-git"
+    "cbonsai-git"
+    "unimatrix-git"
+    "tty-clock-git"
+)
+
+check_deps() {
+    command -v paru >/dev/null 2>&1 || error "paru is required"
+}
+
+transition_packages() {
+    log "Analyzing installed -git packages..."
+    
+    # Create list of installed -git packages
+    installed_git_packages=($(paru -Qq | grep "\-git"))
+    
+    # Track packages to handle
+    declare -a to_remove=()
+    declare -a to_install=()
+    
+    for pkg in "${installed_git_packages[@]}"; do
+        if [[ ${PACKAGE_MAPS[$pkg]+_} ]]; then
+            to_remove+=("$pkg")
+            to_install+=("${PACKAGE_MAPS[$pkg]}")
+        fi
+    done
+    
+    # Show transition plan
+    log "Packages to transition:"
+    for i in "${!to_remove[@]}"; do
+        echo "${to_remove[$i]} -> ${to_install[$i]}"
+    done
+    
+    # Show optional packages that could be removed
+    echo -e "\nOptional packages that could be removed:"
+    for pkg in "${OPTIONAL_PACKAGES[@]}"; do
+        if paru -Qq "$pkg" >/dev/null 2>&1; then
+            echo "$pkg"
+        fi
+    done
+    
+    # Confirm before proceeding
+    read -p "Proceed with transition? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        error "Operation cancelled"
+    fi
+    
+    # Perform transition
+    if [ ${#to_remove[@]} -gt 0 ]; then
+        log "Removing -git packages..."
+        paru -R "${to_remove[@]}"
+        
+        log "Installing stable packages..."
+        paru -S "${to_install[@]}"
+    fi
+    
+    # Ask about optional packages
+    echo -e "\nWould you like to remove any optional packages?"
+    for pkg in "${OPTIONAL_PACKAGES[@]}"; do
+        if paru -Qq "$pkg" >/dev/null 2>&1; then
+            read -p "Remove $pkg? (y/N) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                paru -R "$pkg"
+            fi
+        fi
+    done
+}
+
+# AGS components warning
+check_ags() {
+    if paru -Qq "ags-git" >/dev/null 2>&1; then
+        log "Notice: AGS/astal components detected"
+        echo "The libastal-*-git packages are likely needed for AGS-git."
+        echo "These should remain as -git versions unless you switch to stable AGS."
+        echo
+    fi
+}
+
+main() {
+    check_deps
+    check_ags
+    transition_packages
+    
+    log "Transition complete! Please test your system carefully."
+    log "Note: You may need to reconfigure some applications."
+}
+
+main "$@"

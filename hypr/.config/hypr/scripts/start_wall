@@ -1,0 +1,10 @@
+#!/bin/bash
+$(swww kill && swww-daemon) || swww-daemon
+
+IMG_NAME1=$(ls /home/blake/Pictures/walls/gruvboxyy | shuf -n 1)
+IMG_NAME2=$(ls /home/blake/Pictures/walls/gruvboxyy | shuf -n 1)
+IMG_PATH1=$HOME"/Pictures/walls/gruvboxyy/"$IMG_NAME1
+IMG_PATH2=$HOME"/Pictures/walls/gruvboxyy/"$IMG_NAME2
+
+/home/blake/.local/bin/set_background.sh "$IMG_PATH1" "$IMG_PATH2"
+/home/blake/.config/hypr/scripts/wall_schedule &

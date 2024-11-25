@@ -1,0 +1,9 @@
+if status is-interactive
+  pokemon-colorscripts -r --no-title
+  # Commands to run in interactive sessions can go here
+end
+
+
+# Created by `pipx` on 2024-08-18 22:25:44
+set PATH $PATH /home/blake/.local/bin
+set PATH $PATH /home/blake/.local/share/gem/ruby/3.2.0/bin

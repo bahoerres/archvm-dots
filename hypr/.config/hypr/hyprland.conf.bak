@@ -1,0 +1,340 @@
+# Set programs that you use
+$terminal = kitty
+$fileManager = thunar
+$menu = fuzzel
+$powermenu = ~/.config/rofi/applets/bin/powermenu.sh
+$restartwaybar = exec killall -SIGUSR2 waybar   
+$screenshot = grim
+$music = $HOME/.local/bin/rofi_music
+$colorpicker = $HOME/.local/bin/colorpicker.sh
+$emoji = $HOME/.local/bin/emoji
+$editor = nvim
+$beeper = ~/Applications/beeper.AppImage
+
+# █▀▀ ▀▄▀ █▀▀ █▀▀
+# ██▄ █░█ ██▄ █▄▄
+exec-once = wl-clipboard-history -t
+exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = ~/.config/hypr/xdg-portal-hyprland
+exec-once = /usr/lib/polkit-1/polkit-agent-helper-1
+exec-once = waybar
+exec-once = dunst
+exec-once = eww daemon
+exec-once = playerctld daemon
+exec-once = $HOME/.config/hypr/scripts/start_wall
+exec-once = hypridle
+exec-once = nm-applet --indicator
+exec-once = blueman-applet
+exec-once = wl-paste --type text --watch cliphist store
+exec-once = wl-paste --type image --watch notify-send 'Screenshot' 'Copied to clipboard' -i photoqt
+# Set cursor for Hyprland
+exec-once = hyprctl setcursor Bibata-Modern-Ice 28
+
+# Set cursor for GTK applications
+exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
+exec-once = gsettings set org.gnome.desktop.interface cursor-size 28
+
+# █▀▄▀█ █▀█ █▄░█ █ ▀█▀ █▀█ █▀█
+# █░▀░█ █▄█ █░▀█ █ ░█░ █▄█ █▀▄
+monitor = DP-3, 2560x2880, 0x0, 1.333333 
+monitor = HDMI-A-1, 2560x1440, 1920x660, 1
+
+# █ █▄░█ █▀█ █░█ ▀█▀
+# █ █░▀█ █▀  █▄█ ░█░
+input {
+  kb_layout = us
+  follow_mouse = 1
+  sensitivity = 0 # -1.0 - 1.0, 0 means no modification
+  natural_scroll = false
+}
+
+# █▀▀ █▀▀ █▄░█ █▀▀ █▀█ ▄▀█ █░
+# █▄█ ██▄ █░▀█ ██▄ █▀▄ █▀█ █▄▄
+general {
+  gaps_in = 5
+  gaps_out = 5
+  border_size = 2
+  col.active_border = rgba(D4BE98FF)
+  col.inactive_border = rgba(ebdbb211)
+  no_border_on_floating = false
+  layout = dwindle
+}
+
+# █▀▄▀█ █ █▀ █▀▀
+# █░▀░█ █ ▄█ █▄▄
+misc {
+  disable_hyprland_logo = true
+  disable_splash_rendering = false
+  mouse_move_enables_dpms = true
+  enable_swallow=true
+  swallow_regex=Alacritty
+  swallow_regex=floatcritty
+  swallow_regex =^(kitty)$
+  layers_hog_keyboard_focus=true
+  vfr=true
+  vrr=0
+  animate_mouse_windowdragging=true
+}
+
+# █▀▄ █▀▀ █▀▀ █▀█ █▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
+# █▄▀ ██▄ █▄▄ █▄█ █▀▄ █▀█ ░█░ █ █▄█ █░▀█
+decoration {
+  blur {
+    enabled = 1
+    new_optimizations=true
+    size=4 # minimum 1
+    passes=4 # minimum 1, more passes = more resource intensive.
+  }
+  # multisample_edges=true 
+  rounding=14
+  drop_shadow=1
+  shadow_ignore_window=true
+  shadow_offset=7 7
+  shadow_range=15
+  shadow_render_power=4
+  shadow_scale=0.99
+  col.shadow=rgba(000000BB)
+  #col.shadow_inactive=rgba(000000BB)
+  dim_inactive=true
+  dim_strength=0.49
+  active_opacity= 0.94
+  inactive_opacity= 0.81
+  # Your blur "amount" is blur_size * blur_passes, but high blur_size (over around 5-ish) will produce artifacts.
+  # if you want heavy blur, you need to up the blur_passes.
+  # the more passes, the more you can up the blur_size without noticing artifacts.
+  blurls = gtk-layer-shell
+  # blurls = waybar
+  blurls = hyprlock
+}
+
+# ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
+# █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
+animations {
+ enabled=1
+    # bezier = overshot,0.05,0.9,0.1,1.1 # Version 1
+    # bezier = overshot,0.13,0.99,0.29,1.09 # Version 2
+    bezier = overshot,0,0.61,0.22,1.12 #Current active
+    animation = windows,1,3,default,slide
+    animation = windowsMove,1,3,overshot
+    animation = windowsOut,1,3,default,popin
+    animation = border,1,1,default
+    animation = fadeIn,1,5,default 
+    animation = fadeOut,1,5,default
+    animation = fadeSwitch,1,10,default
+    animation = workspaces,1,3.8,overshot,slidevert
+    animation = border, 1, 10, overshot
+    animation = borderangle, 1, 50, overshot, loop
+    }
+# █░░ ▄▀█ █▄█ █▀█ █░█ ▀█▀ █▀
+# █▄▄ █▀█ ░█░ █▄█ █▄█ ░█░ ▄█
+dwindle {
+    pseudotile=1 # enable pseudotiling on dwindle
+    force_split=2 
+    preserve_split=true
+    no_gaps_when_only=false
+}
+
+# █░█░█ █ █▄░█ █▀▄ █▀█ █░█░█   █▀█ █░█ █░░ █▀▀ █▀
+# ▀▄▀▄▀ █ █░▀█ █▄▀ █▄█ ▀▄▀▄▀   █▀▄ █▄█ █▄▄ ██▄ ▄█
+
+windowrule = float, calendar
+windowrule = float, Todoist
+windowrule = size 1000 600, calendar
+windowrule = center, calendar
+windowrule = float, file_progress
+windowrule = float, confirm
+windowrule = float, dialog
+windowrule = float, download
+windowrule = float, notification
+windowrule = float, error
+windowrule = float, splash
+windowrule = float, confirmreset
+windowrule = float, title:Open File
+windowrule = float, title:branchdialog
+windowrule = float, Lxappearance
+windowrule = opacity 0.96, fuzzel
+windowrule = float, Rofi
+windowrule = float, kitty
+windowrule = float, Alacritty
+windowrule = float, thunar
+windowrule = animation none,Rofi
+windowrule = norounding, kitty
+windowrule = float,viewnior
+windowrule = float,feh
+windowrule = float, pavucontrol-qt
+windowrule = float, pavucontrol
+windowrule = float, file-roller
+windowrule = fullscreen, wlogout
+windowrule = float, title:wlogout
+windowrule = fullscreen, title:wlogout
+windowrule = idleinhibit focus, mpv
+windowrule = workspace 2, zen
+windowrule = workspace 2, firefox
+windowrule = workspace 3, Beeper
+windowrule = workspace 4, nvim
+windowrule = workspace 5, spotify
+windowrule = idleinhibit fullscreen, firefox
+windowrule = opaque, firefox
+windowrule = opaque, zen
+windowrule = opacity 0.96, Rofi
+windowrule = float, title:^(Media viewer)$
+windowrule = float, title:^(Volume Control)$
+windowrule = float, title:^(Picture-in-Picture)$
+windowrule = size 800 600, title:^(Volume Control)$
+windowrule = move 75 44%, title:^(Volume Control)$
+
+# █▄▀ █▀▀ █▄█ █▄▄ █ █▄░█ █▀▄
+# █░█ ██▄ ░█░ █▄█ █ █░▀█ █▄▀
+bind = SUPER, B, exec, zen-browser
+bind = SUPER, O, exec, obsidian
+bind = SUPER, M, exec, $beeper
+bind = SUPER SHIFT, M , exec, thunderbird
+bind = SUPER, L, exec, /home/titus/w11
+bind = SUPER, P, exec, pseudo
+bind = SUPER, F1, exec, ~/.config/hypr/keybind
+bind = SUPER, D, exec, $menu
+bind = SUPER, period, exec, $emoji
+bind = SUPER SHIFT, W, exec, $restartwaybar
+
+# █▀▄▀█ █░█ █░░ ▀█▀ █ █▀▄▀█ █▀▀ █▀▄ █ ▄▀█
+# █░▀░█ █▄█ █▄▄ ░█░ █ █░▀░█ ██▄ █▄▀ █ █▀█
+binde=, XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+binde=, XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+binde=, XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bind=, XF86AudioPlay, exec, playerctl play-pause
+bind=, XF86AudioPause, exec, playerctl play-pause
+bind=, XF86AudioNext, exec, playerctl next
+bind=, XF86AudioPrev, exec, playerctl previous
+
+# █▀ █▀▀ █▀█ █▀▀ █▀▀ █▄░█ █▀ █░█ █▀█ ▀█▀
+# ▄█ █▄▄ █▀▄ ██▄ ██▄ █░▀█ ▄█ █▀█ █▄█ ░█░
+#bind = , Print, exec, $screenshot
+bind = SUPER SHIFT, S, exec, $screenshot -g "$(slurp)" | wl-copy
+
+# █▀▄▀█ █ █▀ █▀▀
+# █░▀░█ █ ▄█ █▄▄
+bind = CTRL ALT, L, exec, hyprlock -c /home/blake/.config/hyprlock/hyprlock.conf
+bind = SUPER, Return, exec, $terminal
+bind = SUPER, E, exec, $fileManager
+bind = SUPER, R, exec, $music
+bind = SUPER, escape, exec, $powermenu
+
+# █░█░█ █ █▄░█ █▀▄ █▀█ █░█░█   █▀▄▀█ ▄▀█ █▄░█ ▄▀█ █▀▀ █▀▄▀█ █▀▀ █▄░█ ▀█▀
+# ▀▄▀▄▀ █ █░▀█ █▄▀ █▄█ ▀▄▀▄▀   █░▀░█ █▀█ █░▀█ █▀█ █▄█ █░▀░█ ██▄ █░▀█ ░█░
+bind = SUPER, Q, killactive,
+bind = SUPER SHIFT, Q, exit,
+bind = ALT, Return, fullscreen, 1
+bind = CTRL ALT, Return, fullscreen
+bind = SUPER, space, exec, $menu
+bind = SUPER SHIFT, F, togglefloating,
+bind = SUPER, P, pseudo, # dwindle
+bind = SUPER, S, togglesplit, # dwindle
+
+# █▀▀ █▀█ █▀▀ █░█ █▀
+# █▀░ █▄█ █▄▄ █▄█ ▄█
+bind = SUPER, left, movefocus, l
+bind = SUPER, right, movefocus, r
+bind = SUPER, up, movefocus, u
+bind = SUPER, down, movefocus, d
+
+# █▀▄▀█ █▀█ █░█ █▀▀
+# █░▀░█ █▄█ ▀▄▀ ██▄
+bind = SUPER SHIFT, left, moveactive, -86 0
+bind = SUPER SHIFT, down, moveactive, 0 86
+bind = SUPER SHIFT, up, moveactive, 0 -86
+bind = SUPER SHIFT, right, moveactive, 86 0
+bind = SUPER, A, moveworkspacetomonitor, current 1
+bind = SUPER, F, moveworkspacetomonitor, current 2
+
+# █▀█ █▀▀ █▀ █ ▀█ █▀▀
+# █▀▄ ██▄ ▄█ █ █▄ ██▄
+bind = SUPER CTRL, left, resizeactive, -186 0
+bind = SUPER CTRL, right, resizeactive, 186 0
+bind = SUPER CTRL, up, resizeactive, 0 -186
+bind = SUPER CTRL, down, resizeactive, 0 186
+
+# ▀█▀ ▄▀█ █▄▄ █▄▄ █▀▀ █▀▄
+# ░█░ █▀█ █▄█ █▄█ ██▄ █▄▀
+bind= SUPER, g, togglegroup,
+bind= SUPER, tab, changegroupactive,
+bind = ALT, TAB, exec, ~/.config/hypr/scripts/tab_floating_windows
+
+# █▀ █▀█ █▀▀ █▀▀ █ ▄▀█ █░░
+# ▄█ █▀▀ ██▄ █▄▄ █ █▀█ █▄▄
+bind = SUPER, grave, togglespecialworkspace,
+bind = SUPERSHIFT, grave, movetoworkspace, special
+
+# █▀ █░█░█ █ ▀█▀ █▀▀ █░█
+# ▄█ ▀▄▀▄▀ █ ░█░ █▄▄ █▀█
+bind = SUPER, 1, workspace, 1
+bind = SUPER, 2, workspace, 2
+bind = SUPER, 3, workspace, 3
+bind = SUPER, 4, workspace, 4
+bind = SUPER, 5, workspace, 5
+bind = SUPER, 6, workspace, 6
+bind = SUPER, 7, workspace, 7
+bind = SUPER, 8, workspace, 8
+bind = SUPER, 9, workspace, 9
+bind = SUPER, 0, workspace, 10
+bind = SUPER ALT, up, workspace, e+1
+bind = SUPER ALT, down, workspace, e-1
+
+# █▀▄▀█ █▀█ █░█ █▀▀
+# █░▀░█ █▄█ ▀▄▀ ██▄
+bind = SUPER SHIFT, 1, movetoworkspace, 1
+bind = SUPER SHIFT, 2, movetoworkspace, 2
+bind = SUPER SHIFT, 3, movetoworkspace, 3
+bind = SUPER SHIFT, 4, movetoworkspace, 4
+bind = SUPER SHIFT, 5, movetoworkspace, 5
+bind = SUPER SHIFT, 6, movetoworkspace, 6
+bind = SUPER SHIFT, 7, movetoworkspace, 7
+bind = SUPER SHIFT, 8, movetoworkspace, 8
+bind = SUPER SHIFT, 9, movetoworkspace, 9
+bind = SUPER SHIFT, 0, movetoworkspace, 10
+bind = SUPER, A, movecurrentworkspacetomonitor, l
+bind = SUPER, F, movecurrentworkspacetomonitor, r 
+
+# █▀▄▀█ █▀█ █░█ █▀ █▀▀   █▄▄ █ █▄░█ █▀▄ █ █▄░█ █▀▀
+# █░▀░█ █▄█ █▄█ ▄█ ██▄   █▄█ █ █░▀█ █▄▀ █ █░▀█ █▄█
+bindm = SUPER, mouse:272, movewindow
+bindm = SUPER, mouse:273, resizewindow
+bind = SUPER, mouse_down, workspace, e+1
+bind = SUPER, mouse_up, workspace, e-1
+
+# █▀▀ █▄░█ █░█   █░█ ▄▀█ █▀█ █ ▄▀█ █▄▄ █░░ █▀▀ █▀
+# ██▄ █░▀█ ▀▄▀   ▀▄▀ █▀█ █▀▄ █ █▀█ █▄█ █▄▄ ██▄ ▄█
+env = GDK_BACKEND,wayland,x11
+env = QT_QPA_PLATFORM,wayland;xcb
+env = SDL_VIDEODRIVER,wayland
+env = CLUTTER_BACKEND,wayland
+env = XDG_CURRENT_DESKTOP,Hyprland
+env = XDG_SESSION_TYPE,wayland
+env = QT_QPA_PLATFORMTHEME,qt5ct
+env = XDG_SESSION_DESKTOP,Hyprland
+env = QT_AUTO_SCREEN_SCALE_FACTOR,1
+# env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
+env = WLR_NO_HARDWARE_CURSORS=1 Hyprland
+env = GBM_BACKEND,nvidia-drm
+env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+env = LIBVA_DRIVER_NAME,nvidia
+env = XCURSOR_THEME,Bibata-Modern-Ice
+env = XCURSOR_SIZE,24
+
+cursor {
+    no_hardware_cursors = true
+}
+
+# █▀ █▀▀ █▀█ █ █▀█ ▀█▀ █▀
+# ▄█ █▄▄ █▀▄ █ █▀▀ ░█░ ▄█
+bind = SUPER SHIFT, D, exec, ~/.config/rofi/launchers/type-2/launcher.sh
+bind = SUPER SHIFT, B, exec, $restartwaybar
+bind = SUPER,F12,exec,$HOME/.config/rofi/applets/bin/clipboard.sh
+bind = ,Print,exec,$HOME/.config/rofi/applets/bin/screenshot.sh
+
+
+
+# █░░ █ █▀▄   █▀ █░█░█ █ ▀█▀ █▀▀ █░█
+# █▄▄ █ █▄▀   ▄█ ▀▄▀▄▀ █ ░█░ █▄▄ █▀█
+bindl = ,switch:Lid Switch,exec,~/.config/hypr/scripts/lock
+bindl = ,switch:Lid Switch,exec,systemctl suspend

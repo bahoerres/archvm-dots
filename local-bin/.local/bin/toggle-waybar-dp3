@@ -1,0 +1,10 @@
+#!/bin/bash
+# Save as ~/.local/bin/toggle-waybar-dp3
+
+current_workspace=$(hyprctl monitors -j | jq '.[] | select(.name == "DP-3") | .activeWorkspace.id')
+
+if [ "$current_workspace" -eq 4 ]; then
+    hyprctl keyword monitor DP-3,addreserved,0,0,0,0
+else
+    hyprctl keyword monitor DP-3,addreserved,0,59,0,0
+fi

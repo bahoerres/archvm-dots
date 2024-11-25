@@ -1,0 +1,162 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+import time
+from gtknotification import GTKNotification
+from os.path import realpath, dirname
+from sys import stdout
+
+# Default dimensions just in case
+DEFAULT_HEIGHT = 24
+DEFAULT_WIDTH = 80
+
+# Arguments
+parser = argparse.ArgumentParser(description="Fancy pomodoro timer script")
+
+parser.add_argument("-w", "--work", action="store",
+                    type=int, help="Number of minutes of work",
+                    default=25)
+parser.add_argument("-r", "--rest", action="store",
+                    type=int, help="Number of minutes of rest",
+                    default=5)
+parser.add_argument("-f", "--font", action="store",
+                    help="Custom font file",
+                    default=dirname(realpath(__file__))+'/font.txt')
+parser.add_argument("-t", "--total", action="store_true",
+                    help="Show the total timer")
+parser.add_argument("-n", "--nocenter", action="store_true",
+                    help="Do not center timer (more efficient)")
+
+args = parser.parse_args()
+
+centered = not args.nocenter
+show_total = args.total
+work_seconds = args.work * 60
+rest_seconds = args.rest * 60
+fontFile = args.font
+
+# Turn string into blocky ascii representation
+# Supports 0-9, colon
+
+
+def asciiFormat(string, font):
+    # enumerate numbers and colons
+    string = list(
+        map(int, [c.replace(":", "10").replace("/", "11") for c in list(string)]))
+    height = len(font[0])
+
+    frame = ""
+    # fill frame top to bottom
+    for i in range(height):
+        # loop through string
+        for char in string[:-1]:
+            frame += font[char][i] + " "
+        # dirty hack to have no space at the end
+        frame += font[string[-1]][i]
+
+        frame += "\n"
+    return frame[:-1]
+
+
+def center(frame, termDimensions):
+    # Pad with spaces and newlines to center
+    if centered:
+        termHeight = termDimensions[0]
+        termWidth = termDimensions[1]
+        frame = frame.split("\n")
+        frameWidth = max(map(len, frame))
+        frameHeight = len(frame)
+        # pad horizontally
+        pad = " " * int((termWidth - frameWidth) / 2)
+        frame = "\n".join([(pad + line + pad) for line in frame])
+
+        # pad vertically
+        pad = "\n" * int((termHeight - frameHeight) / 2)
+        frame = pad + frame + pad
+    return frame
+
+
+def clear():
+    # Clear the screen
+    print("\033c", end='')
+
+
+def getTermDimensions():
+    # Get the terminal dimensions [height, width]
+    try:
+        dimensions = subprocess.check_output(['stty', 'size']).split()
+        return list(map(int, dimensions))
+    except subprocess.CalledProcessError:
+        return [DEFAULT_HEIGHT, DEFAULT_WIDTH]
+
+
+# Load font file
+with open(fontFile, "r") as f:
+    font = f.read().split("\n<---->\n")
+    font = [symbol.split("\n") for symbol in font]
+
+
+def print_progress_bar(left_time, total_time, term_dimension):
+    try:
+        percentage = 1 - (left_time / total_time)
+    except:
+        print('-' * term_dimension[1])
+        return
+    try:
+        number_of_squares = int(term_dimension[1] * percentage)
+    except:
+        print('=' * term_dimension[1])
+        return
+    print('=' * number_of_squares, end='')
+    print('-' * (term_dimension[1] - number_of_squares), end='')
+
+
+def writing_loop(seconds, message, color):
+    initial_time_seconds = seconds
+    initialTime = "%s:%02d" % divmod(seconds, 60)
+    while seconds >= 0:
+        t = "%s:%02d" % divmod(seconds, 60)
+        clear()
+        # Color
+        print(color, end='')
+        # Print the clock and the message
+        if show_total is True:
+            print(center(asciiFormat(
+                '{0}/{1}'.format(t, initialTime), font), getTermDimensions()), end="")
+        else:
+            print(center(asciiFormat(t, font), getTermDimensions()), end="")
+        # Show message
+        print(message)
+        # Show progress bar
+        print_progress_bar(seconds, initial_time_seconds, getTermDimensions())
+        # Remove color
+        print('\033[0m', end='')
+        stdout.flush()
+
+        seconds -= 1
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            clear()
+            print('Press CTRL+C again to quit')
+            try:
+                time.sleep(1)
+                return
+            except KeyboardInterrupt:
+                quit(0)
+
+
+# Pomodoro!
+
+mynotification = GTKNotification()
+
+while True:
+    # Work timer
+    writing_loop(work_seconds, 'You Should Work!', '\033[92m')
+    # Send notification about resting time
+    mynotification.send_notification('Pomodoro Timer', 'Rest time 🛋️')
+    # Rest timer
+    writing_loop(rest_seconds, 'You Should Rest!', '\033[94m')
+    # Send notification about work time
+    mynotification.send_notification('Pomodoro Timer', 'Work time 💻')

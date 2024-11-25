@@ -1,0 +1,34 @@
+#!/bin/bash
+FOLDER_PATH="/home/blake/Pictures/walls/gruvboxyy"
+
+# Ensure swww daemon is running
+if ! pgrep -x "swww-daemon" > /dev/null; then
+    swww init
+    sleep 1
+fi
+
+echo "wall script started" >> /tmp/wall.log
+
+# Get random images
+IMAGE1=$(find "$FOLDER_PATH" -type f -print0 | shuf -z -n 1 | xargs -0 basename)
+IMAGE2=$(find "$FOLDER_PATH" -type f -print0 | shuf -z -n 1 | xargs -0 basename)
+
+echo "Selected images: $IMAGE1 and $IMAGE2" >> /tmp/wall.log
+
+# Get monitor outputs
+MONITORS=$(hyprctl monitors -j | jq -r '.[].name')
+
+# Set wallpapers with different transitions
+monitor_array=($MONITORS)
+swww img -o "${monitor_array[0]}" "$FOLDER_PATH/$IMAGE1" \
+    --transition-type fade \
+    --transition-fps 60 \
+    --transition-duration 1.5 \
+
+swww img -o "${monitor_array[1]}" "$FOLDER_PATH/$IMAGE2" \
+    --transition-type wipe \
+    --transition-fps 60 \
+    --transition-duration 1 \
+    --transition-angle 30
+
+echo "wall script completed" >> /tmp/wall.log

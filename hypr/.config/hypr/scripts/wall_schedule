@@ -1,0 +1,26 @@
+#!/bin/bash
+FOLDER_PATH="/home/blake/Pictures/walls/gruvboxyy"
+
+echo "Starting wall_schedule script" >> /tmp/wall_schedule.log
+
+while true; do
+    # Get list of just filenames
+    cd "$FOLDER_PATH" || exit 1
+    readarray -t LIST1 < <(find . -maxdepth 1 -type f -printf "%f\n" | shuf)
+    readarray -t LIST2 < <(find . -maxdepth 1 -type f -printf "%f\n" | shuf)
+    
+    for i in "${!LIST1[@]}"; do
+        echo "Setting wallpapers: ${LIST1[i]} and ${LIST2[i]}" >> /tmp/wall_schedule.log
+        
+        if "$HOME/.local/bin/set_background.sh" "$FOLDER_PATH/${LIST1[i]}" "$FOLDER_PATH/${LIST2[i]}"; then
+            echo "Wallpapers set successfully" >> /tmp/wall_schedule.log
+        else
+            echo "Error setting wallpapers" >> /tmp/wall_schedule.log
+            sleep 5
+        fi
+        
+        echo "Sleeping for 1 hour" >> /tmp/wall_schedule.log
+        sleep 1h
+    done
+    echo "Reshuffling wallpaper lists" >> /tmp/wall_schedule.log
+done

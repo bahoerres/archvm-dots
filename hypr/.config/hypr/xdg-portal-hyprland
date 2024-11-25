@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Enable error handling
+# This will cause the script to exit if any command fails
+set -e
+
+# Function for logging
+# This function adds a timestamp to each log message and writes to both
+# the console and a log file for easier debugging
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$HOME/.local/share/xdg-portal-hyprland.log"
+}
+
+# Start of script execution
+log "Starting XDG portal script"
+
+# Kill existing portal processes
+# The '|| true' ensures the script doesn't exit if no processes are found to kill
+# This is necessary because 'set -e' would otherwise cause the script to exit
+log "Stopping existing portal processes"
+killall xdg-desktop-portal-hyprland xdg-desktop-portal-wlr xdg-desktop-portal || true
+
+# Start Hyprland-specific portal
+# We use '&' to run it in the background so the script can continue
+log "Starting xdg-desktop-portal-hyprland"
+if ! /usr/lib/xdg-desktop-portal-hyprland & then
+    log "Failed to start xdg-desktop-portal-hyprland"
+    exit 1
+fi
+
+# Wait for Hyprland portal to initialize
+# This pause allows time for the Hyprland-specific portal to fully start
+# before we start the main XDG portal
+sleep 2
+
+# Start the main XDG desktop portal
+# Again, we run it in the background
+log "Starting xdg-desktop-portal"
+if ! /usr/lib/xdg-desktop-portal & then
+    log "Failed to start xdg-desktop-portal"
+    exit 1
+fi
+
+# Log successful completion
+log "XDG portal script completed successfully"

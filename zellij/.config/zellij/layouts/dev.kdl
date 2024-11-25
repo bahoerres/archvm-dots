@@ -1,0 +1,23 @@
+// ~/.config/zellij/config.kdl
+keybinds {
+    normal {
+        bind "Ctrl g" { SwitchToMode "locked"; }
+        bind "Ctrl p" { SwitchToMode "pane"; }
+        bind "Ctrl n" { SwitchToMode "resize"; }
+        bind "Ctrl t" { SwitchToMode "tab"; }
+        bind "Ctrl q" { Quit; }
+    }
+}
+
+// ~/.config/zellij/layouts/dev.kdl
+layout {
+    pane split_direction="vertical" {
+        pane size="80%" command="nvim"
+        pane split_direction="horizontal" {
+            pane command="git" {
+                args "status"
+            }
+            pane command="htop"
+        }
+    }
+}
